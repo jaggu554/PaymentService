@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.payment.service.PaymentRequest;
-import com.payment.service.PaymentService;
+import com.payment.service.dto.PaymentRequest;
 import com.payment.service.entity.Payment;
+import com.payment.service.service.PaymentService;
 
 @RequestMapping("/payments")
 @RestController 

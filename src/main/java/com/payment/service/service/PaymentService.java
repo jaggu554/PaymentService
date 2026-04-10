@@ -1,4 +1,4 @@
-package com.payment.service;
+package com.payment.service.service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.payment.service.constant.paymentStatus;
+import com.payment.service.dto.PaymentRequest;
 import com.payment.service.entity.Payment;
 import com.payment.service.repo.PaymentRepository;
 
