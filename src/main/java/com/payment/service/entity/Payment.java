@@ -36,12 +36,13 @@ public class Payment {
 	
 	private Double amount;
 	
+	
 	@Enumerated(EnumType.STRING)
 	private paymentStatus status;
 	
 	private String idempotencyKey;
 	
-	private String gateWayPaymetId;
+	private String gateWayPaymentId;
 	
 	@Column(name="created_at",insertable=true,updatable=false)
 	@CreatedDate

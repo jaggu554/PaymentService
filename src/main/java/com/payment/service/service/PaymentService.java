@@ -54,17 +54,21 @@ public class PaymentService {
 		
 		
 		// simulate gateway call
-		boolean success=callGateWay();
+//		boolean success=callGateWay();
+//		
+//		if(success) {
+//			payment.setStatus(paymentStatus.SUCCESS);
+//			payment.setGateWayPaymetId(UUID.randomUUID().toString());
+//			
+//		}else {
+//			payment.setStatus(paymentStatus.FAILED);
+//		}
 		
-		if(success) {
-			payment.setStatus(paymentStatus.SUCCESS);
-			payment.setGateWayPaymetId(UUID.randomUUID().toString());
-			
-		}else {
-			payment.setStatus(paymentStatus.FAILED);
-		}
+		// passing information into the webhook to decide the payment is failed or passed.
+		String paymentGatewayId=UUID.randomUUID().toString();
+		payment.setGateWayPaymentId(paymentGatewayId);
+		payment.setStatus(paymentStatus.PENDING);
 		
-
 		payment.setUpdateAt(LocalDateTime.now());
 
 		return repository.save(payment);
