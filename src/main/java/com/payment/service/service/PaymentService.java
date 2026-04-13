@@ -3,8 +3,10 @@ package com.payment.service.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.payment.service.constant.paymentStatus;
@@ -19,7 +21,30 @@ public class PaymentService {
 	private PaymentRepository repository;
 	
 	
+	@Autowired
+	private StringRedisTemplate redisTemplate;
+	
+	
 	public Payment createPayment(PaymentRequest request) {
+		
+		// sentex locking only request need to save in DB. if multiple requests comes
+		String lockKey="lock:"+request.getIdempotencyKey();
+		
+		Boolean isLocked=redisTemplate.opsForValue().setIfAbsent(lockKey, "LOCKED",10,TimeUnit.MINUTES);
+		
+		if(!Boolean.TRUE.equals(isLocked)) {
+			throw new RuntimeException("Duplicate request in progress");
+		}
+		
+		String key="payment:"+request.getIdempotencyKey();
+		
+		// Redis Check 
+		String existingPayment=redisTemplate.opsForValue().get(key);
+		
+		if(existingPayment!=null) {
+			return repository.findById(Long.valueOf(existingPayment)).orElse(null);
+		}
+		
 		
 		// idempotency check
 		Optional<Payment> existing= repository.findByIdempotencyKey(request.getIdempotencyKey());
@@ -70,6 +95,8 @@ public class PaymentService {
 		payment.setStatus(paymentStatus.PENDING);
 		
 		payment.setUpdateAt(LocalDateTime.now());
+		
+		redisTemplate.opsForValue().set(key, String.valueOf(payment.getId()));
 
 		return repository.save(payment);
 	}
